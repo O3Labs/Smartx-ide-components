@@ -1,7 +1,7 @@
 import * as types from "../mutation-type"
 import axios from 'axios'
 import {OP_TYPE, NODE_URL} from '../../helpers/consts'
-import { client, Parameter } from 'ontology-dapi';
+import o3dapi from 'o3-dapi-core';
 let Ont = require('ontology-ts-sdk');
 
 export default {
@@ -99,14 +99,14 @@ export default {
     },
 
    async dapiDeploy({dispatch, commit}, params) {
-     const {code, name, version, author, email, description, needStorage, gasPrice, gasLimit} = params
+     const {code, name, version, author, email, description, needStorage, gasPrice, gasLimit, network} = params
      try {
-       const account = await client.api.asset.getAccount();
+       const account = await o3dapi.ONT.getAccount();
      } catch (err) {
        return 'NO_ACCOUNT';
      }
      try {
-       const result = await client.api.smartContract.deploy({
+       const result = await o3dapi.ONT.sc.deploy({
          code,
          name,
          version,
@@ -115,7 +115,8 @@ export default {
          description,
          needStorage,
          gasPrice,
-         gasLimit
+         gasLimit,
+         network,
        });
       //  alert('onScDeploy finished, result:' + JSON.stringify(result));
        console.log('onScDeploy finished, result:' + JSON.stringify(result))
@@ -143,7 +144,7 @@ export default {
     },
     async getDapiProvider({dispatch, commit}) {
       try {
-        const result = await client.api.provider.getProvider();
+        const result = await o3dapi.ONT.getProvider();
         console.log('onGetProvider: ' + JSON.stringify(result));
         return result;
       } catch (e) {

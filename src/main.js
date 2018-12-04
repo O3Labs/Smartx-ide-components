@@ -20,9 +20,11 @@ import 'font-awesome/css/font-awesome.css'
 
 import URL_API from "../config/prod.env";
 import index from 'axios';
-import {client} from 'ontology-dapi';
+import o3dapi from 'o3-dapi-core';
+import o3dapiOnt from 'o3-dapi-ont';
 
-client.registerClient({});
+o3dapi.initPlugins([o3dapiOnt]);
+LangStorage.setLang('en');
 
 /**
  * Vee Validate

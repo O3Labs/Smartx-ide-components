@@ -1,7 +1,7 @@
 import * as types from "../mutation-type"
 import axios from 'axios'
 import { OP_TYPE, NODE_URL } from "../../helpers/consts";
-import { client, ParameterType } from 'ontology-dapi';
+import o3dapi from 'o3-dapi-core';
 let Ont = require('ontology-ts-sdk');
 
 
@@ -104,13 +104,13 @@ export default {
     async dapiInvoke({commit}, params) {
       const {contract, method, parameters, gasPrice, gasLimit, requireIdentity} = params
       try {
-        const account = await client.api.asset.getAccount();
+        const account = await o3dapi.ONT.getAccount();
       } catch (err) {
         console.log(err)
         return 'NO_ACCOUNT';
       }
       try {
-        const result = await client.api.smartContract.invoke({
+        const result = await o3dapi.ONT.sc.invoke({
           contract,
           method,
           parameters,
@@ -140,13 +140,8 @@ export default {
       }
     },
     async dapiInvokeRead({ commit }, params) {
-      const { contract, method, parameters} = params
       try {
-        const result = await client.api.smartContract.invokeRead({
-          contract,
-          method,
-          parameters
-        });
+        const result = await o3dapi.ONT.sc.invokeRead(params);
         console.log('onScCall finished, result:' + JSON.stringify(result));
         commit({
           type: types.APPEND_OUTPUT_LOG,

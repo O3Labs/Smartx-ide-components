@@ -1,6 +1,6 @@
 <template>
   <div class="run-page">
-    <div class="run-card">
+    <!-- <div class="run-card">
       <button class="btn btn-outline-success run-btn-submit" style="margin-bottom: 0" data-toggle="modal" data-target="#WalletFileInfoInRun">{{$t('deploy.selectWallet')}}</button>
     </div>
     <div class="run-card card-info" >
@@ -31,7 +31,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <!--Basic Info-->
     <div class="run-card card-basic-info" >
@@ -79,12 +79,12 @@
     </div>
 
     <div class="run-card run-btns">
-      <button class="btn btn-outline-success run-btn-submit" 
+      <button class="btn btn-outline-success run-btn-submit"
               v-bind:disabled="runStatus" @click="debugContract()">{{runStatus&&runDebug ? $t('run.waiting') : $t('run.debugRun')}}</button>
       <button class="btn btn-outline-success run-btn-submit"
               id="preRun" data-toggle="tooltip" data-placement="top" :title="$t('run.preRuntips')"
               v-bind:disabled="runStatus" @click="runContract(true)">{{runStatus&&runPreRun ? $t('run.waiting') : $t('run.preRun')}}</button>
-      <button class="btn btn-outline-success run-btn-submit" 
+      <button class="btn btn-outline-success run-btn-submit"
                v-bind:disabled="runStatus" @click="runContract(false)">{{runStatus&&runOnly ? $t('run.waiting') : $t('run.run')}}</button>
     </div>
 
@@ -267,48 +267,6 @@
       ScParameter
     },
     computed: {
-      /*
-        projectInfo:{
-          info:{
-            abi:'',
-            code:'',
-            contract_hash:'',
-            created_at:'',
-            id:'',
-            info_author:'',
-            info_desc:'',
-            info_email:'',
-            info_name:'',
-            info_version:'',
-            language:'',
-            name:'',
-            nvm_byte_code:'',
-            type:'',
-            updated_at:'',
-            user_id:'',
-            wat:''
-        }，
-        compileInfo:{
-          abi{
-            function:[{
-              name:'',
-              parameters:[{
-                name:'',
-                type:''
-              }]
-              returntype:''
-            }],
-            avm:'',
-            contractHash:'',
-            errdetail:'',
-            haveReCompile:'',
-            showCompileInfo: '',
-          }
-        }
-        runInfo:{
-          contractHash:'',
-        }
-       */
       ...mapState({
         projectInfo: state => state.ProjectInfoPage.ProjectInfo,
         ProjectName: state => state.ProjectInfoPage.ProjectName,
@@ -706,67 +664,69 @@
 
         let contractHash = this.runInfo.contractHash
         let util = Ont.utils
-        const contractAddr = new Ont.Crypto.Address(util.reverseHex(contractHash));
 
         const params = {
-          contractAddr: contractAddr,
-          method: this.functionName,
-          parameters: parameters,
+          scriptHash: contractHash,
+          operation: this.functionName,
+          args: parameters,
           gasPrice: 500,
           gasLimit: 20000,
-          requireIdentity: false
+          requireIdentity: false,
+          network: 'PrivateNet',
         }
 
 
-        if(preExec){//预运行
-
-          const tx = Ont.TransactionBuilder.makeInvokeTransaction(params.method, params.parameters, params.contractAddr, params.gasPrice, params.gasLimit);
-          console.log(tx)
-          let res
-          if(this.networkInRun === '0'){
-            res = new Ont.RestClient(process.env.NODE_URL).sendRawTransaction(tx.serialize(), true, false);
-          }else if(this.networkInRun === '1'){
-            res = new Ont.RestClient("https://polaris1.ont.io:10334").sendRawTransaction(tx.serialize(), true, false);
-          }else{
-            res = new Ont.RestClient(this.privateNet).sendRawTransaction(tx.serialize(), true, false);
-          }
-          res.then(function(value) {
-            console.log(value)
-            _self.$store.commit({
-              type: types.APPEND_OUTPUT_LOG,
-              log: value,
-              op: OP_TYPE.Invoke
-            })
-          }, function(error) {
-            console.log(error)
-            _self.$store.commit({
-              type: types.APPEND_OUTPUT_LOG,
-              log: error,
-              op: OP_TYPE.Invoke
-            })
-          });
-
-          this.runStatus = false;
-          this.runPreRun = false
-        }else{
-          this.runContractParam = params
-          this.showEnterWalletPassword()
-        }
-/*        this.$store.dispatch('getDapiProvider').then(provider => {
+        // if(preExec){//预运行
+        //
+        //   const tx = Ont.TransactionBuilder.makeInvokeTransaction(params.method, params.parameters, params.contractAddr, params.gasPrice, params.gasLimit);
+        //   console.log(tx)
+        //   let res
+        //   if(this.networkInRun === '0'){
+        //     res = new Ont.RestClient(process.env.NODE_URL).sendRawTransaction(tx.serialize(), true, false);
+        //   }else if(this.networkInRun === '1'){
+        //     res = new Ont.RestClient("https://polaris1.ont.io:10334").sendRawTransaction(tx.serialize(), true, false);
+        //   }else{
+        //     res = new Ont.RestClient(this.privateNet).sendRawTransaction(tx.serialize(), true, false);
+        //   }
+        //   res.then(function(value) {
+        //     console.log(value)
+        //     _self.$store.commit({
+        //       type: types.APPEND_OUTPUT_LOG,
+        //       log: value,
+        //       op: OP_TYPE.Invoke
+        //     })
+        //   }, function(error) {
+        //     console.log(error)
+        //     _self.$store.commit({
+        //       type: types.APPEND_OUTPUT_LOG,
+        //       log: error,
+        //       op: OP_TYPE.Invoke
+        //     })
+        //   });
+        //
+        //   this.runStatus = false;
+        //   this.runPreRun = false
+        // }else{
+        //   this.runContractParam = params
+        //   this.showEnterWalletPassword()
+        // }
+        this.$store.dispatch('getDapiProvider').then(provider => {
           if(!provider) {
             alert(this.$t('ide.noProvider'))
             this.runStatus = false;
             return;
           }
           if(preExec) {
-            this.$store.dispatch('dapiInvokeRead', params).then(res => {
+            this.$store.dispatch('dapiInvokeRead', params)
+            .then(res => {
               console.log(res);
               this.runStatus = false;
               this.runPreRun = false
               return;
             })
           } else {
-            this.$store.dispatch('dapiInvoke', params).then(res => {
+            this.$store.dispatch('dapiInvoke', params)
+            .then(res => {
               console.log(res)
               this.runStatus = false
               this.runOnly = false
@@ -776,7 +736,7 @@
               }
             })
           }
-        })*/
+        })
       },
       showLoadingModal($title,$content,$isShowCloseButton){
         let payload = {

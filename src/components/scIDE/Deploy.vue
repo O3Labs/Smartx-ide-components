@@ -1,12 +1,12 @@
 <template>
   <div class="deploy-page">
 
-    <div class="deploy-card">
+    <!-- <div class="deploy-card">
       <button class="btn btn-outline-success deploy-btn-submit deploy-btn-submit-wallet" data-toggle="modal" data-target="#WalletFileInfoInDeploy">{{$t('deploy.selectWallet')}}</button>
       <button class="btn btn-outline-success deploy-btn-submit deploy-btn-submit-wallet" style="float: right" data-toggle="modal" data-target="#GenerateWallet">{{$t('deploy.generateWallet')}}</button>
 
-    </div>
-    <div class="deploy-card card-info" >
+    </div> -->
+    <!-- <div class="deploy-card card-info" >
       <div class="card border-secondary mb-3" style="max-width: 20rem;">
         <div class="card-header">{{$t('deploy.walletInfo')}}</div>
         <div class="deploy-card-scroll">
@@ -34,7 +34,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <div class="deploy-card card-fee" >
       <div class="card border-secondary mb-3" style="max-width: 20rem;">
@@ -81,8 +81,8 @@
     </div>
 
     <div class="deploy-card">
-      <!--<button class="btn btn-outline-success deploy-btn-submit" v-bind:disabled="waitingStatus" @click="doDeploy">{{waitingStatus ? $t('deploy.waiting') : $t('deploy.deploy')}}</button>-->
-      <button class="btn btn-outline-success deploy-btn-submit" data-toggle="modal" v-bind:disabled="waitingStatus" @click="showEnterWalletPassword" >{{waitingStatus ? $t('deploy.waiting') : $t('deploy.deploy')}}</button>
+      <button class="btn btn-outline-success deploy-btn-submit" v-bind:disabled="waitingStatus" @click="doDeploy">{{waitingStatus ? $t('deploy.waiting') : $t('deploy.deploy')}}</button>
+      <!-- <button class="btn btn-outline-success deploy-btn-submit" data-toggle="modal" v-bind:disabled="waitingStatus" @click="showEnterWalletPassword" >{{waitingStatus ? $t('deploy.waiting') : $t('deploy.deploy')}}</button> -->
     </div>
 
     <!--Wallet Modal -->
@@ -250,83 +250,6 @@
     created(){
     },
     computed: {
-      /*
-        projectInfo:{
-          info:{
-            abi:'',
-            code:'',
-            contract_hash:'',
-            created_at:'',
-            id:'',
-            info_author:'',
-            info_desc:'',
-            info_email:'',
-            info_name:'',
-            info_version:'',
-            language:'',
-            name:'',
-            nvm_byte_code:'',
-            type:'',
-            updated_at:'',
-            user_id:'',
-            wat:''
-        }，
-        projectName:{
-          info:{
-            id:'',
-            language:'',
-            projectName:'',
-          }
-        }
-        deployContractInfo:{
-          author:'',
-          desc:'',
-          email:'',
-          name:'',
-          version:'',
-        }
-        deployInfo:{
-          info:{
-            result:{
-              Action:'',
-              Desc:'',
-              Error:'',
-              Result:{
-                GasConsumed:'',
-                Notify:[{
-                  ContractAddress:'',
-                  States:[{
-                    0:'',//Transfer type
-                    1:'',//From,
-                    2:'',//To
-                    3:'',//GasConsumed
-                  }]
-                }]
-                State:'',
-                TxHash:''
-              },
-              Version:''
-            }
-          }
-        }
-        compileInfo:{
-          abi{
-            function:[{
-              name:'',
-              parameters:[{
-                name:'',
-                type:''
-              }]
-              returntype:''
-            }],
-            avm:'',
-            contractHash:'',
-            errdetail:'',
-            haveReCompile:'',
-            showCompileInfo: '',
-          }
-        }
-       */
       ...mapState({
         projectInfo: state => state.ProjectInfoPage.ProjectInfo,
         projectName: state => state.ProjectInfoPage.ProjectName,
@@ -491,102 +414,65 @@
         const email = this.deployContractInfo.email || ''
         const desc = this.deployContractInfo.desc || ''
 
-        let _self = this
-       let account = this.deployWalletInfo.info.account
+      const params = {
+        code: avmCode,
+        name,
+        version,
+        author,
+        email,
+        desc,
+        needStorage,
+        gasPrice: '500',
+        gasLimit: '30000000',
+        network: 'PrivateNet',
+      }
 
-
-         let defaultNet
-         if(this.network === '0'){
-           defaultNet = process.env.NODE_URL
-         }else if(this.network === '1'){
-           defaultNet = "https://polaris1.ont.io:10334"
-         }else{
-           defaultNet = this.privateNet
+       this.$store.dispatch('getDapiProvider')
+       .then(provider => {
+         if(!provider) {
+           this.ErrorInfo = (LangStorage.getLang('zh') === "zh") ? zh.ide.noProvider : en.ide.noProvider
+           $('#DeployError').modal('show')
+           this.deployStatus = false
+           this.waitingStatus = false
+           return;
          }
-         const restClient = new Ont.RestClient(defaultNet);
+         return this.$store.dispatch('dapiDeploy', params)
+       })
+       .then(res => {
+         //console.log(res)
+         if(res === 'NO_ACCOUNT') {
+           this.deployStatus = false
+           this.waitingStatus = false
+           this.ErrorInfo = (LangStorage.getLang('zh') === "zh") ? zh.ide.noProviderAccount : en.ide.noProviderAccount
+           $('#DeployError').modal('show')
+           return;
+         }
+         if(res === 'CANCELED') {
+           this.deployStatus = false
+           this.waitingStatus = false
+           this.ErrorInfo = (LangStorage.getLang('zh') === "zh") ? zh.ide.deployFalseInProvider : en.ide.deployFalseInProvider
+           $('#DeployError').modal('show')
+           return;
+         }
+         let contractHash = this.getContractHash()
+         this.$store.dispatch('setDeployInfo', res)
+         this.deployStatus = true
+         this.showRun()
+         this.waitingStatus = false
 
-         const tx = Ont.TransactionBuilder.makeDeployCodeTransaction(avmCode,name, version, author, email, desc, needStorage, '500', '30000000');
-         tx.payer = new Ont.Crypto.Address(account.address);
-         Ont.TransactionBuilder.signTransaction(tx, $privateKey);
-         const result = restClient.sendRawTransaction(tx.serialize());
-
-         result.then(function(value){
-
-           _self.$store.dispatch('setDeployInfo', value)
-
-           if(value.Desc === "SUCCESS"){
-             _self.deployStatus = true
-             _self.showRun()
-             _self.waitingStatus = false
-
-             let contractHash = _self.getContractHash()
-             //save code to server
-             let param = {
-               id: _self.projectName.info.id,
-               contract_hash: contractHash,
-               info_name: _self.deployContractInfo.name,
-               info_version: _self.deployContractInfo.version,
-               info_author: _self.deployContractInfo.author,
-               info_email: _self.deployContractInfo.email,
-               info_desc: _self.deployContractInfo.desc,
-             }
-             _self.$store.dispatch('saveProject', param)
-           }else{
-             _self.deployStatus = true
-             _self.waitingStatus = false
-             _self.$store.dispatch('clearContractHash')
-           }
-         })
-
-
-
-
-
-
-/*        this.$store.dispatch('getDapiProvider').then(provider => {
-          if(!provider) {
-            this.ErrorInfo = (LangStorage.getLang('zh') === "zh") ? zh.ide.noProvider : en.ide.noProvider
-            $('#DeployError').modal('show')
-            this.deployStatus = false
-            this.waitingStatus = false
-            return;
-          }
-          this.$store.dispatch('dapiDeploy', params).then(res => {
-            //console.log(res)
-            if(res === 'NO_ACCOUNT') {
-              this.deployStatus = false
-              this.waitingStatus = false
-              this.ErrorInfo = (LangStorage.getLang('zh') === "zh") ? zh.ide.noProviderAccount : en.ide.noProviderAccount
-              $('#DeployError').modal('show')
-              return;
-            }
-            if(res === 'CANCELED') {
-              this.deployStatus = false
-              this.waitingStatus = false
-              this.ErrorInfo = (LangStorage.getLang('zh') === "zh") ? zh.ide.deployFalseInProvider : en.ide.deployFalseInProvider
-              $('#DeployError').modal('show')
-              return;
-            }
-            let contractHash = this.getContractHash()
-            this.$store.dispatch('setDeployInfo', res)
-            this.deployStatus = true
-            this.showRun()
-            this.waitingStatus = false
-
-            //save code to server
-            let param = {
-              id: _self.projectName.info.id,
-              contract_hash: contractHash,
-              info_name: _self.deployContractInfo.name,
-              info_version: _self.deployContractInfo.version,
-              info_author: _self.deployContractInfo.author,
-              info_email: _self.deployContractInfo.email,
-              info_desc: _self.deployContractInfo.desc,
-            }
-            this.$store.dispatch('saveProject', param)
-            //console.log(res)
-          })
-        })*/
+         //save code to server
+         let param = {
+           id: _self.projectName.info.id,
+           contract_hash: contractHash,
+           info_name: _self.deployContractInfo.name,
+           info_version: _self.deployContractInfo.version,
+           info_author: _self.deployContractInfo.author,
+           info_email: _self.deployContractInfo.email,
+           info_desc: _self.deployContractInfo.desc,
+         }
+         this.$store.dispatch('saveProject', param)
+         //console.log(res)
+       })
       },
       showErrorModel($title,$content,$isShowCloseButton){
         let payload = {

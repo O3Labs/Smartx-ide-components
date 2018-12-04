@@ -92,7 +92,7 @@
   import LangStorage from './../../helpers/lang'
   import zh from './../../common/lang/zh'
   import en from './../../common/lang/en'
-  import { client } from 'ontology-dapi';
+  import o3Dapi from 'o3-dapi-core';
 
   export default {
     name: "tool",
@@ -114,17 +114,18 @@
     },
     methods: {
       getPrivateNet(){
-        let msg = client.api.network.getNetwork()
-        let _self = this
-        msg.then(function(value) {
-          if(value.type === 'MAIN'){
-            _self.privateNet = "Main Net"
-          }else if(value.type === 'TEST'){
+        // let msg = o3Dapi.ONT.getNetworks()
+        // let _self = this
+        // msg.then(function(value) {
+        //   const { networks } = value;
+        //   if(value.type === 'MAIN'){
+        //     _self.privateNet = "Main Net"
+        //   }else if(value.type === 'TEST'){
             _self.privateNet = "Test Net"
-          }else{
-            _self.privateNet = value.address
-          }
-        })
+          // }else{
+          //   _self.privateNet = value.address
+          // }
+        // })
       },
       sendMsgToRestful($num){
         let _self = this

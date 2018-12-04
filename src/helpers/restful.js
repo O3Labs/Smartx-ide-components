@@ -1,4 +1,3 @@
-import { client } from 'ontology-dapi';
 export const Restful = [{
   description:'Return current block height of net',
   type:'GET',
@@ -255,6 +254,3 @@ export const Restful = [{
   response:'',
   dapi:false,
 }]
-
-
-
