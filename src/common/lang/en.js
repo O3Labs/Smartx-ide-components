@@ -303,7 +303,7 @@ export default {
     errorContent:'Connecting failed.Please check the network',
     noValue:'Please enter parameters',
     send:'Send',
-    privateNet:'Cyano Net:'
+    privateNet:'PrivateNet:'
   },
   project: {
     event: 'Event',
@@ -336,8 +336,8 @@ export default {
     operationPopoverInfo:'You can choose to compile, deploy, and run the code here, and you can view information about the contract.',
     outputPopover:'Log print area',
     outputPopoverInfo:'Your compilation, deployment, and operation of the code will be shown here.',
-    noProvider: 'No provider installed.You can install Cyano wallet as provider from Chrome web store.',
-    noProviderAccount: 'Please first generate a wallet in the provider of Cyano wallet.',
+    noProvider: 'No provider installed. Please access from your O3 wallet.',
+    noProviderAccount: 'Transaction rejected.',
     deployFalseInProvider: 'The deployment failed. Please check if the wallet has enough balance.',
     oep4: 'OEP4',
     oep8: 'OEP8',

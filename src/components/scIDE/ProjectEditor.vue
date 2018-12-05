@@ -3,8 +3,6 @@
 
     <div class="project-editor-div">
 
-      <div id="editorCSharp" class="project-editor" v-show="showEditorCSharp"></div>
-
       <div id="editorPython" class="project-editor" v-show="showEditorPython">from boa.interop.System.Runtime import Log
 
 def Main(operation, args):
@@ -20,7 +18,6 @@ def Hello(msg):
   return True
       </div>
 
-      <div id="editorJavaScript" class="project-editor" v-show="showEditorJavaScript"></div>
       <small class="form-text text-muted">{{$t('ide.annotation')}}</small>
     </div>
 
@@ -61,36 +58,6 @@ import {SET_EDITOR} from '../../store/mutation-type'
       }
     },
     computed: {
-      /*
-        projectInfo:{
-          info:{
-            abi:'',
-            code:'',
-            contract_hash:'',
-            created_at:'',
-            id:'',
-            info_author:'',
-            info_desc:'',
-            info_email:'',
-            info_name:'',
-            info_version:'',
-            language:'',
-            name:'',
-            nvm_byte_code:'',
-            type:'',
-            updated_at:'',
-            user_id:'',
-            wat:''
-        }，
-        projectName:{
-          info:{
-            id:'',
-            language:'',
-            projectName:'',
-          }
-        }
-        projectEditor：''，
-       */
       ...mapState({
         projectInfo: state => state.ProjectInfoPage.ProjectInfo,
         ProjectName: state => state.ProjectInfoPage.ProjectName,
@@ -109,13 +76,13 @@ import {SET_EDITOR} from '../../store/mutation-type'
       //console.log(this.ProjectName)
       this.getEditor(this.ProjectName.info.language)
       let _self = this
-      this.$store.dispatch('getProject', this.ProjectName).then(function (response) {
-        //_self.projectEditor.setValue(_self.projectInfo.info.code || '')
-        _self.$store.dispatch('getPublicLibraryProject').then(function(res){
-          _self.$emit('isShowLoadingModal',false);
-          _self.$store.dispatch('setHaveReCompile', true)
-        })
-      })
+      // this.$store.dispatch('getProject', this.ProjectName).then(function (response) {
+      //   //_self.projectEditor.setValue(_self.projectInfo.info.code || '')
+      //   _self.$store.dispatch('getPublicLibraryProject').then(function(res){
+      //     _self.$emit('isShowLoadingModal',false);
+      //     _self.$store.dispatch('setHaveReCompile', true)
+      //   })
+      // })
 
     },
     methods: {
@@ -127,21 +94,9 @@ import {SET_EDITOR} from '../../store/mutation-type'
         let langTools = ace.require("ace/ext/language_tools");
 
         let editor
-        if ($codeLang === PROJECT_LANGAUGE.C_SHARP){
-          this.showEditorCSharp = true
-          editor = ace.edit("editorCSharp")
-          editor.session.setMode("ace/mode/csharp")
-
-        }else if($codeLang === PROJECT_LANGAUGE.PYTHON){
-          this.showEditorPython = true
-          editor = ace.edit("editorPython")
-          editor.session.setMode("ace/mode/python")
-
-        }else if($codeLang === PROJECT_LANGAUGE.JAVASCRIPT){
-          this.showEditorJavaScript = true
-          editor = ace.edit("editorJavaScript")
-          editor.session.setMode("ace/mode/javascript")
-        }
+        this.showEditorPython = true
+        editor = ace.edit("editorPython")
+        editor.session.setMode("ace/mode/python")
 
         editor.setTheme("ace/theme/crimson_editor")
         editor.setAutoScrollEditorIntoView(true)
