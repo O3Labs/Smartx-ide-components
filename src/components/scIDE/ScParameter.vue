@@ -30,8 +30,8 @@
             <option value="String">String</option>
             <option value="Integer">Integer</option>
             <option value="Boolean">Boolean</option>
-            <option value="Address">Address</option>            
-            <option value="Array">Array</option>                
+            <option value="Address">Address</option>
+            <option value="Array">Array</option>
             </select>
             <p class="card-text">{{parameter.name}}:</p>
             <span v-if="parameter.type === 'Boolean'" class="run-input-radio">
@@ -109,4 +109,3 @@ export default {
     }
 }
 </script>
-

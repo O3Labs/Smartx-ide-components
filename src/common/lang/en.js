@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   navbar: {
     net: 'Choose Network:',
     register: 'Sign Up',
@@ -339,6 +339,8 @@ module.exports = {
     noProvider: 'No provider installed.You can install Cyano wallet as provider from Chrome web store.',
     noProviderAccount: 'Please first generate a wallet in the provider of Cyano wallet.',
     deployFalseInProvider: 'The deployment failed. Please check if the wallet has enough balance.',
+    oep4: 'OEP4',
+    oep8: 'OEP8',
   },
   projectEditor:{
     modifyWatTitle:'Modify Wat Memory',

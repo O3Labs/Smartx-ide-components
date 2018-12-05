@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   navbar: {
     net: '网络选择 :',
     register: '注册',
@@ -363,6 +363,8 @@ module.exports = {
     noProvider: '没有安装插件。您可以从Chrome应用商店里安装Cyano wallet作为Provider。',
     noProviderAccount: '请先在Cyano wallet插件中生成钱包。',
     deployFalseInProvider: '部署失败，请检查钱包是否有足够的余额。',
+    oep4: 'OEP4',
+    oep8: 'OEP8',
   },
   projectEditor:{
     modifyWatTitle:'修改Wat内存值',

@@ -11,6 +11,9 @@
           <div class="dropdown-item ide-dropdown-item custom-file">
             <label class="ide-file-label" @click="saveProject"><i class="fa fa-file-text-o ide-fa"></i>{{$t('ide.save')}}</label>
           </div>
+          <div class="dropdown-item ide-dropdown-item custom-file">
+            <label class="ide-file-label" @click="loadOEP4"><i class="fa fa-file-text-o ide-fa"></i>{{$t('ide.oep4')}}</label>
+          </div>
         </div>
       </div>
       <label class="ide-project-file" id="ide-project-file">{{fileName}}</label>
@@ -115,6 +118,7 @@
   import {mapState} from 'vuex'
   import zh from './../../common/lang/zh'
   import en from './../../common/lang/en'
+  import oep4template from './../../helpers/templates/OEP4_template'
 
 
   export default {
@@ -144,44 +148,6 @@
       ProjectOperation
     },
     computed: {
-      /*
-        projectInfo:{
-          info:{
-            abi:'',
-            code:'',
-            contract_hash:'',
-            created_at:'',
-            id:'',
-            info_author:'',
-            info_desc:'',
-            info_email:'',
-            info_name:'',
-            info_version:'',
-            language:'',
-            name:'',
-            nvm_byte_code:'',
-            type:'',
-            updated_at:'',
-            user_id:'',
-            wat:''
-        }，
-        projectName:{
-          info:{
-            id:'',
-            language:'',
-            projectName:'',
-          }
-        }
-        editor：''，
-        projectList:{
-          info:[{
-            id:'',
-            language:'',
-            languageType:'',
-            name:''
-          }]
-        },
-       */
       ...mapState({
         projectInfo: state => state.ProjectInfoPage.ProjectInfo,
         ProjectName: state => state.ProjectInfoPage.ProjectName,
@@ -196,11 +162,24 @@
     },
     methods: {
       saveProject(){
-        let param={
-          code: this.editor.getValue(),
-          id: this.projectInfo.info.id,
+        var file = new Blob([this.editor.getValue()]);
+        if (window.navigator.msSaveOrOpenBlob) // IE10+
+            window.navigator.msSaveOrOpenBlob(file, this.projectInfo.info.id);
+        else { // Others
+            var a = document.createElement("a"),
+                    url = URL.createObjectURL(file);
+            a.href = url;
+            a.download = 'smartContract.py';
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(function() {
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            }, 0);
         }
-        this.$store.dispatch('saveProject', param)
+      },
+      loadOEP4() {
+        this.editor.setValue(oep4template)
       },
       isShowIdeLoadingModal($data){
         $('#ide-loading').modal('hide')
@@ -239,7 +218,7 @@
       },
       checkFileType($codeFileInfo){
         let fileNameType = this.fileName.substring(this.fileName.length-3,this.fileName.length)
-        if((fileNameType === ".py"&&this.projectInfo.info.language === "1") ||
+        if((fileNameType === ".py"&&this.projectInfo.info.language === "Python") ||
           (fileNameType === ".js"&&this.projectInfo.info.language === "3") ||
           (fileNameType === ".cs"&&this.projectInfo.info.language === "2")){
 

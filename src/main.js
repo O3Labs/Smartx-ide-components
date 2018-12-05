@@ -11,6 +11,8 @@ import LangStorage from './helpers/lang'
 
 import zh from './common/validate/zh'
 import en from './common/validate/en'
+import zhMsg from './common/lang/zh'
+import enMsg from './common/lang/en'
 import VeeValidate, { Validator } from 'vee-validate'
 
 import VueCookies from 'vue-cookies'
@@ -43,8 +45,8 @@ Vue.use(VueI18n)
 const i18n = new VueI18n({
   locale: LangStorage.getLang('en'),  // 语言标识
   messages: {
-    'zh': require('./common/lang/zh'),
-    'en': require('./common/lang/en')
+    'zh': zhMsg,
+    'en': enMsg
   }
 })
 

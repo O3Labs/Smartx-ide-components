@@ -222,7 +222,7 @@
 	          contract_hash: _self.compileInfo.contractHash
           }
           console.log(_self.compileInfo)
-          this.$store.dispatch('saveProject', param)
+          // this.$store.dispatch('saveProject', param)
           this.$store.dispatch('setHaveReCompile', true)
 
         })

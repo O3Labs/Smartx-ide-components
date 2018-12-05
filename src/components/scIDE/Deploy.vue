@@ -389,30 +389,30 @@
         return codeHash
       },
      doDeploy($privateKey){
-        if(!this.deployContractInfo.name || !this.deployContractInfo.version || !this.deployContractInfo.author ||
-        !this.deployContractInfo.email || !this.deployContractInfo.desc) {
-          //Need to be required for now.Will remove it when update on ontology-dapi
-          this.ErrorInfo = (LangStorage.getLang('zh') === "zh") ? zh.deploy.emptyInfo : en.deploy.emptyInfo
-          $('#DeployError').modal('show')
-          this.waitingStatus = false
-          return;
-        }
-        this.waitingStatus = true
-        if(!this.compileInfo.avm) {
-          this.ErrorInfo = (LangStorage.getLang('zh') === "zh") ? zh.deploy.errorCompile : en.deploy.errorCompile
-          $('#DeployError').modal('show')
-          this.waitingStatus = false
-          return
-        }
+      if(!this.deployContractInfo.name || !this.deployContractInfo.version || !this.deployContractInfo.author ||
+      !this.deployContractInfo.email || !this.deployContractInfo.desc) {
+        //Need to be required for now.Will remove it when update on ontology-dapi
+        this.ErrorInfo = (LangStorage.getLang('zh') === "zh") ? zh.deploy.emptyInfo : en.deploy.emptyInfo
+        $('#DeployError').modal('show')
+        this.waitingStatus = false
+        return;
+      }
+      this.waitingStatus = true
+      if(!this.compileInfo.avm) {
+        this.ErrorInfo = (LangStorage.getLang('zh') === "zh") ? zh.deploy.errorCompile : en.deploy.errorCompile
+        $('#DeployError').modal('show')
+        this.waitingStatus = false
+        return
+      }
 
-        //build deploycode tx
-        const needStorage = true
-        let avmCode = this.compileInfo.avm
-        const name = this.deployContractInfo.name || ''
-        const version = this.deployContractInfo.version || ''
-        const author = this.deployContractInfo.author || ''
-        const email = this.deployContractInfo.email || ''
-        const desc = this.deployContractInfo.desc || ''
+      //build deploycode tx
+      const needStorage = true
+      let avmCode = this.compileInfo.avm
+      const name = this.deployContractInfo.name || ''
+      const version = this.deployContractInfo.version || ''
+      const author = this.deployContractInfo.author || ''
+      const email = this.deployContractInfo.email || ''
+      const description = this.deployContractInfo.desc || ''
 
       const params = {
         code: avmCode,
@@ -420,7 +420,7 @@
         version,
         author,
         email,
-        desc,
+        description,
         needStorage,
         gasPrice: '500',
         gasLimit: '30000000',
@@ -457,20 +457,20 @@
          let contractHash = this.getContractHash()
          this.$store.dispatch('setDeployInfo', res)
          this.deployStatus = true
-         this.showRun()
+         // this.showRun()
          this.waitingStatus = false
 
-         //save code to server
-         let param = {
-           id: _self.projectName.info.id,
-           contract_hash: contractHash,
-           info_name: _self.deployContractInfo.name,
-           info_version: _self.deployContractInfo.version,
-           info_author: _self.deployContractInfo.author,
-           info_email: _self.deployContractInfo.email,
-           info_desc: _self.deployContractInfo.desc,
-         }
-         this.$store.dispatch('saveProject', param)
+         // //save code to server
+         // let param = {
+         //   id: _self.projectName.info.id,
+         //   contract_hash: contractHash,
+         //   info_name: _self.deployContractInfo.name,
+         //   info_version: _self.deployContractInfo.version,
+         //   info_author: _self.deployContractInfo.author,
+         //   info_email: _self.deployContractInfo.email,
+         //   info_desc: _self.deployContractInfo.desc,
+         // }
+         // this.$store.dispatch('saveProject', param)
          //console.log(res)
        })
       },
