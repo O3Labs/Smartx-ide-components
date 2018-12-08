@@ -14,6 +14,9 @@
           <div class="dropdown-item ide-dropdown-item custom-file">
             <label class="ide-file-label" @click="loadOEP4"><i class="fa fa-file-text-o ide-fa"></i>{{$t('ide.oep4')}}</label>
           </div>
+          <div class="dropdown-item ide-dropdown-item custom-file">
+            <label class="ide-file-label" @click="loadOEP8"><i class="fa fa-file-text-o ide-fa"></i>{{$t('ide.oep8')}}</label>
+          </div>
         </div>
       </div>
       <label class="ide-project-file" id="ide-project-file">{{fileName}}</label>
@@ -119,7 +122,7 @@
   import zh from './../../common/lang/zh'
   import en from './../../common/lang/en'
   import oep4template from './../../helpers/templates/OEP4_template'
-
+  import oep8template from './../../helpers/templates/OEP8_template'
 
   export default {
     props: ['useChineseLanguage'],
@@ -180,6 +183,9 @@
       },
       loadOEP4() {
         this.editor.setValue(oep4template)
+      },
+      loadOEP8() {
+        this.editor.setValue(oep8template)
       },
       isShowIdeLoadingModal($data){
         $('#ide-loading').modal('hide')
