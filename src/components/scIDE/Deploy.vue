@@ -64,6 +64,14 @@
       </div>
     </div>
 
+    <div style="margin-bottom: 10px">
+      <p class="card-text test-title-text test-card-text-title" style="margin-top: 0px"><strong>{{ $t('test.selectNet') }}</strong></p>
+      <label class="card-text test-title-text"><input name="testFunctionNet" type="radio" v-model="network" value="0"/><strong style="margin-left: 4px">{{ $t('test.mainNet') }}</strong></label>
+      <label class="card-text test-title-text" style="margin-left: 8px"><input name="testFunctionNet" type="radio" v-model="network" value="1"/><strong style="margin-left: 4px">{{ $t('test.testNet') }}</strong></label>
+      <label class="card-text test-title-text" style="margin-left: 8px"><input name="testFunctionNet" type="radio" v-model="network" value="2"/><strong style="margin-left: 4px">{{ $t('test.privateNet') }}</strong></label>
+    </div>
+
+
     <div class="deploy-card card-result" >
       <div class="card border-secondary mb-3" style="gitmax-width: 20rem;">
         <div class="card-header" data-toggle="tooltip" data-placement="bottom" :title="$t('deploy.resultTooltips')">{{$t('deploy.result')}}</div>
@@ -224,6 +232,7 @@
   import FileHelper from './../../common/ont-wallet/file-generate-and-get'
   import OWallet from './../../common/ont-wallet/wallet'
   let Ont = require('ontology-ts-sdk');
+  import o3dapi from 'o3-dapi-core';
 
 
   export default {
@@ -244,7 +253,8 @@
         privateNet:'http://127.0.0.1:20334',
         isHidePrivateNetInput:false,
         getWalletPrivateKeyPassowrd:'',
-        generateWalletPassword:''
+        generateWalletPassword:'',
+        networks: [],
       }
     },
     created(){
@@ -260,6 +270,13 @@
       })
     },
     mounted(){
+      const _self = this;
+      o3dapi.ONT.addEventListener(o3dapi.ONT.Constants.EventName.READY, () => {
+        o3dapi.ONT.getNetworks()
+        .then(networks => {
+          _self.networks = networks;
+        });
+      });
     },
     watch: {
     },
@@ -424,7 +441,7 @@
         needStorage,
         gasPrice: '500',
         gasLimit: '30000000',
-        network: 'PrivateNet',
+        network: this.networks[this.network],
       }
 
        this.$store.dispatch('getDapiProvider')
